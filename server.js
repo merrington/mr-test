@@ -11,6 +11,7 @@ var supShifts = [
 	{"start": [12,0,0], "stop": [17, 59, 59], "name": "Supervisor 3"},
 	{"start": [18,0,0], "stop": [23, 59, 59], "name": "Supervisor 4"}
 ]
+var notificationQueue = [];
 
 function handleRequest(req, res) {
 	try {
@@ -33,16 +34,31 @@ function notifySupervisor(cb) {
 
 //setup a route for POST requests to /vault will notify supervisor
 dispatcher.onPost("/vault", function(req, res) {
-	console.log("Vault accessed - %s", moment().utcOffset(0).format());
+	var accessTime = moment().utcOffset(0).format();
+	console.log("Vault accessed - %s",accessTime );
 	notifySupervisor(function(shift) {
 		if (shift) {
 			console.log('Need to notify %s', shift.name);
+			notificationQueue.push({'name': shift.name, 'accessTime': accessTime});
 		} else {
 			console.error('No supervisor found!');
 		}
 	});
 	res.writeHead(200, {'Content-Type': 'application/json'});
 	res.end(JSON.stringify({'ok':true}));
+});
+
+
+//setup a route for GET requests to /vault - just list (in order) the notifications
+dispatcher.onGet("/vault", function(req, res) {
+	console.log("Following notifications are in the queue:");
+	var notifications = [];
+	_.each(notificationQueue, function(notification) {
+		notifications.push(notification);
+		console.log("Notifying %s for vault access at %s", notification.name, notification.accessTime);
+	});
+	res.writeHead(200, {'Content-Type': 'application/json'});
+	res.end(JSON.stringify(notifications));
 });
 
 
