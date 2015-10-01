@@ -53,12 +53,10 @@ dispatcher.onPost("/vault", function(req, res) {
 
 //setup a route for GET requests to /vault - just list (in order) the notifications
 dispatcher.onGet("/vault", function(req, res) {
-	console.log("Following notifications are in the queue:");
 	var notifications = [];
-	_.each(notificationQueue, function(notification) {
-		notifications.push(notification);
-		console.log("Notifying %s for vault access at %s", notification.name, notification.accessTime);
-	});
+	notificationQueue.forEach(function() {
+		notifications.push(notificationQueue.pop());
+	}); 
 	res.writeHead(200, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
 	res.end(JSON.stringify(notifications));
 });
