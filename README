@@ -1,0 +1,10 @@
+# README
+
+## How to test
+1. Run server.js in a node process  
+`node server.js`
+2. Send a POST request to localhost:8080/vault  
+`curl -XPOST localhost:8080/vault`
+
+## TODO
+- Client side
