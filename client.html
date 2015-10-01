@@ -1,0 +1,62 @@
+<html>
+	<head>
+		<title>Notifiction Client(s)</title>
+		<script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div id="vault-client">
+			<button id="notify">Access vault</button>
+		</div>
+		<hr/>
+		<div id="supervisor-client">
+			
+		</div>
+	</body>
+	<script>
+		//click handler for the access vault button
+		$('#notify').click(function(e) {
+			$.post("http://localhost:8080/vault")
+				.done(function(data) {
+					alert('Access allowed');
+				})
+				.fail(function(data) {
+					alert('Error - try again');
+				});
+		});
+
+
+		//
+		function poll2() {
+			$.get("http://localhost:8080/vault", {
+				data: {poll: true}
+			})
+			.done(function(data) {
+				if (data.length > 0) {
+					$('#supervisor-client').append(JSON.stringify(data)+"<br/>");
+				}
+			})
+			.fail(function(data) {
+				$('#supervisor-client').append("Error<br/>");
+			})
+			.always(poll2);
+		}
+		//poll2();
+
+
+		(function poll() {
+			setTimeout(function() {
+				$.get("http://localhost:8080/vault")
+					.done(function(data) {
+						if (data.length > 0) {
+							$('#supervisor-client').append(JSON.stringify(data)+"<br/>");
+						}
+					})
+					.fail(function(data) {
+						$('#supervisor-client').append("Error<br/>");
+					})
+					.always(poll);
+				}, 10000);
+		})();
+
+	</script>
+</html>
