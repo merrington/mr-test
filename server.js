@@ -42,9 +42,11 @@ dispatcher.onPost("/vault", function(req, res) {
 			notificationQueue.push({'name': shift.name, 'accessTime': accessTime});
 		} else {
 			console.error('No supervisor found!');
+			res.writeHead(400, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
+			res.end(JSON.stringify({'ok':false}));
 		}
 	});
-	res.writeHead(200, {'Content-Type': 'application/json'});
+	res.writeHead(200, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
 	res.end(JSON.stringify({'ok':true}));
 });
 
@@ -57,7 +59,7 @@ dispatcher.onGet("/vault", function(req, res) {
 		notifications.push(notification);
 		console.log("Notifying %s for vault access at %s", notification.name, notification.accessTime);
 	});
-	res.writeHead(200, {'Content-Type': 'application/json'});
+	res.writeHead(200, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
 	res.end(JSON.stringify(notifications));
 });
 
